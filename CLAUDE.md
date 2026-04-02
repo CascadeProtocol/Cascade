@@ -45,3 +45,4 @@ docs/
 - `PAPER_TRADING=true` is the default — never change this without testing
 - Agent always calls `simulate_path` before `arb_decision`
 - Never use `console.log` — use `createLogger(ns)` from `lib/logger.ts`
+
