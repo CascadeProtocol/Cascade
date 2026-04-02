@@ -1,0 +1,33 @@
+{
+  "name": "cascade",
+  "version": "1.0.0",
+  "description": "Autonomous cross-venue arbitrage scanner for Solana — Claude-powered path evaluation across Jupiter, Raydium, Orca, and Meteora",
+  "type": "module",
+  "scripts": {
+    "start": "node dist/index.js",
+    "dev": "bun run --watch index.ts",
+    "build": "tsup",
+    "sim": "bun run sim/backtest.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.54.0",
+    "@solana/web3.js": "^1.98.0",
+    "zod": "^3.23.0",
+    "dotenv": "^16.4.5"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.6.0",
+    "tsup": "^8.3.0",
+    "vitest": "^2.1.0",
+    "bun-types": "latest"
+  },
+  "keywords": [
+    "solana", "arbitrage", "defi", "jupiter", "raydium", "orca", "meteora",
+    "claude", "ai-agent", "mcp", "autonomous"
+  ],
+  "license": "MIT"
+}

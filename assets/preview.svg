@@ -1,0 +1,129 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="820" height="500" viewBox="0 0 820 500">
+  <defs>
+    <style>text { font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace; }</style>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0d1117"/>
+      <stop offset="100%" stop-color="#090c10"/>
+    </linearGradient>
+    <linearGradient id="oppBar" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#3fb950" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#3fb950" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Border glow -->
+  <rect x="1" y="1" width="818" height="498" rx="10" fill="none" stroke="#21262d" stroke-width="1.5"/>
+  <rect width="820" height="500" rx="10" fill="url(#bg)"/>
+
+  <!-- Header -->
+  <rect width="820" height="44" rx="10" fill="#111827"/>
+  <rect y="34" width="820" height="10" fill="#111827"/>
+  <circle cx="22" cy="22" r="7" fill="#ff5f57"/>
+  <circle cx="44" cy="22" r="7" fill="#febc2e"/>
+  <circle cx="66" cy="22" r="7" fill="#28c840"/>
+  <text x="410" y="27" text-anchor="middle" fill="#6b7280" font-size="12" letter-spacing="2">CASCADE  ·  CROSS-VENUE ARBITRAGE SCANNER</text>
+
+  <!-- Scan status bar -->
+  <rect x="16" y="56" width="788" height="30" rx="5" fill="#161b22"/>
+  <text x="28" y="76" fill="#3fb950" font-size="11">● SCANNING</text>
+  <text x="105" y="76" fill="#484f58" font-size="11">|</text>
+  <text x="118" y="76" fill="#8b949e" font-size="11">4 venues  ·  12 pairs  ·  scan interval 3s</text>
+  <text x="640" y="76" fill="#484f58" font-size="11">opportunities found:</text>
+  <text x="778" y="76" fill="#f0883e" font-size="11" text-anchor="end">3</text>
+
+  <!-- Column headers -->
+  <text x="28" y="108" fill="#484f58" font-size="10" letter-spacing="1">PAIR</text>
+  <text x="200" y="108" fill="#484f58" font-size="10" letter-spacing="1">JUPITER</text>
+  <text x="330" y="108" fill="#484f58" font-size="10" letter-spacing="1">RAYDIUM</text>
+  <text x="460" y="108" fill="#484f58" font-size="10" letter-spacing="1">ORCA</text>
+  <text x="570" y="108" fill="#484f58" font-size="10" letter-spacing="1">METEORA</text>
+  <text x="700" y="108" fill="#484f58" font-size="10" letter-spacing="1">SPREAD</text>
+  <line x1="16" y1="114" x2="804" y2="114" stroke="#21262d" stroke-width="1"/>
+
+  <!-- Row 1: SOL/USDC — OPPORTUNITY -->
+  <rect x="16" y="118" width="788" height="36" rx="4" fill="url(#oppBar)"/>
+  <rect x="16" y="118" width="3" height="36" rx="2" fill="#3fb950"/>
+  <text x="28" y="141" fill="#e6edf3" font-size="13" font-weight="bold">SOL/USDC</text>
+  <text x="200" y="136" fill="#8b949e" font-size="11">$147.23</text>
+  <text x="200" y="150" fill="#484f58" font-size="10">liq: $2.1M</text>
+  <text x="330" y="136" fill="#8b949e" font-size="11">$147.31</text>
+  <text x="330" y="150" fill="#484f58" font-size="10">liq: $980K</text>
+  <text x="460" y="136" fill="#8b949e" font-size="11">$147.19</text>
+  <text x="460" y="150" fill="#484f58" font-size="10">liq: $1.4M</text>
+  <text x="570" y="136" fill="#3fb950" font-size="11" font-weight="bold">$147.61</text>
+  <text x="570" y="150" fill="#3fb950" font-size="10">← best ask</text>
+  <text x="700" y="136" fill="#3fb950" font-size="12" font-weight="bold">+0.42 (0.29%)</text>
+  <text x="700" y="150" fill="#3fb950" font-size="10">▲ LIVE OPP</text>
+
+  <!-- Row 2: JUP/USDC -->
+  <text x="28" y="173" fill="#8b949e" font-size="13">JUP/USDC</text>
+  <text x="200" y="173" fill="#8b949e" font-size="11">$0.8821</text>
+  <text x="330" y="173" fill="#8b949e" font-size="11">$0.8819</text>
+  <text x="460" y="173" fill="#8b949e" font-size="11">$0.8824</text>
+  <text x="570" y="173" fill="#8b949e" font-size="11">$0.8820</text>
+  <text x="700" y="173" fill="#484f58" font-size="12">+0.0005 (0.06%)</text>
+  <line x1="16" y1="182" x2="804" y2="182" stroke="#161b22" stroke-width="1"/>
+
+  <!-- Row 3: BONK/USDC — OPPORTUNITY -->
+  <rect x="16" y="186" width="788" height="36" rx="4" fill="url(#oppBar)"/>
+  <rect x="16" y="186" width="3" height="36" rx="2" fill="#3fb950"/>
+  <text x="28" y="209" fill="#e6edf3" font-size="13" font-weight="bold">BONK/USDC</text>
+  <text x="200" y="204" fill="#8b949e" font-size="11">$0.00001842</text>
+  <text x="330" y="204" fill="#3fb950" font-size="11" font-weight="bold">$0.00001869</text>
+  <text x="330" y="218" fill="#3fb950" font-size="10">← best ask</text>
+  <text x="460" y="204" fill="#8b949e" font-size="11">$0.00001841</text>
+  <text x="570" y="204" fill="#8b949e" font-size="11">$0.00001845</text>
+  <text x="700" y="204" fill="#3fb950" font-size="12" font-weight="bold">+1.46%</text>
+  <text x="700" y="218" fill="#3fb950" font-size="10">▲ LIVE OPP</text>
+
+  <!-- Row 4: WIF/USDC -->
+  <text x="28" y="241" fill="#8b949e" font-size="13">WIF/USDC</text>
+  <text x="200" y="241" fill="#8b949e" font-size="11">$1.2341</text>
+  <text x="330" y="241" fill="#8b949e" font-size="11">$1.2338</text>
+  <text x="460" y="241" fill="#8b949e" font-size="11">$1.2344</text>
+  <text x="570" y="241" fill="#8b949e" font-size="11">$1.2340</text>
+  <text x="700" y="241" fill="#484f58" font-size="12">+0.0006 (0.05%)</text>
+  <line x1="16" y1="250" x2="804" y2="250" stroke="#161b22" stroke-width="1"/>
+
+  <!-- Opportunity detail panel -->
+  <rect x="16" y="262" width="788" height="100" rx="6" fill="#161b22" stroke="#3fb950" stroke-width="1" stroke-opacity="0.4"/>
+  <text x="28" y="282" fill="#484f58" font-size="10" letter-spacing="1">BEST OPPORTUNITY  ·  AGENT REASONING</text>
+  <line x1="16" y1="288" x2="804" y2="288" stroke="#21262d" stroke-width="1"/>
+
+  <!-- Path visualization -->
+  <text x="28" y="308" fill="#8b949e" font-size="11">Path:</text>
+  <rect x="68" y="295" width="72" height="18" rx="3" fill="#1f3a5c"/>
+  <text x="104" y="308" fill="#58a6ff" font-size="11" text-anchor="middle">Jupiter</text>
+  <text x="148" y="308" fill="#3fb950" font-size="12">→</text>
+  <rect x="162" y="295" width="88" height="18" rx="3" fill="#1a3a2a"/>
+  <text x="206" y="308" fill="#3fb950" font-size="11" text-anchor="middle">Meteora</text>
+  <text x="258" y="308" fill="#484f58" font-size="11">SOL/USDC</text>
+
+  <text x="28" y="328" fill="#8b949e" font-size="11">Buy:</text>
+  <text x="60" y="328" fill="#58a6ff" font-size="11">$147.23 on Jupiter</text>
+  <text x="220" y="328" fill="#8b949e" font-size="11">Sell:</text>
+  <text x="252" y="328" fill="#3fb950" font-size="11">$147.61 on Meteora</text>
+  <text x="420" y="328" fill="#8b949e" font-size="11">Size: $10,000</text>
+  <text x="540" y="328" fill="#484f58" font-size="11">Gas est: $0.18</text>
+  <text x="660" y="328" fill="#3fb950" font-size="11" font-weight="bold">Net: +$23.60</text>
+
+  <text x="28" y="350" fill="#6b7280" font-size="11" font-style="italic">"Spread 0.29% exceeds 0.20% threshold. Liquidity depth sufficient on both sides. Executing."</text>
+
+  <!-- Footer agent status -->
+  <rect x="16" y="374" width="788" height="28" rx="5" fill="#111827"/>
+  <text x="28" y="393" fill="#3fb950" font-size="11">● Claude agent ACTIVE</text>
+  <text x="180" y="393" fill="#484f58" font-size="11">|</text>
+  <text x="193" y="393" fill="#8b949e" font-size="11">cycle #312</text>
+  <text x="280" y="393" fill="#484f58" font-size="11">|</text>
+  <text x="293" y="393" fill="#8b949e" font-size="11">total profit (paper): +$1,847.20</text>
+  <text x="570" y="393" fill="#484f58" font-size="11">|</text>
+  <text x="583" y="393" fill="#8b949e" font-size="11">win rate: 73.4%</text>
+  <text x="790" y="393" fill="#484f58" font-size="11" text-anchor="end">PAPER MODE</text>
+
+  <!-- Bottom bar -->
+  <rect x="0" y="412" width="820" height="28" rx="0" fill="#0a0e14"/>
+  <rect x="0" y="412" width="820" height="1" fill="#21262d"/>
+  <rect x="0" y="490" width="820" height="10" rx="10" fill="#0a0e14"/>
+  <text x="28" y="431" fill="#484f58" font-size="10">Claude Sonnet 4.5  ·  Bun 1.2  ·  Jupiter v6  ·  Solana</text>
+  <text x="792" y="431" fill="#484f58" font-size="10" text-anchor="end">github.com/CascadeLabs/cascade</text>
+</svg>
