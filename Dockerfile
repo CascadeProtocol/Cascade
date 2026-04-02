@@ -14,3 +14,4 @@ COPY --from=builder /app/package.json ./
 RUN mkdir -p /app/logs && chown -R cascade:cascade /app/logs
 USER cascade
 CMD ["node", "dist/index.js"]
+
