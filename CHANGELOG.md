@@ -12,3 +12,4 @@
 - TradeExecutor — paper trading mode with win rate tracking
 - Backtester (`sim/backtest.ts`) — synthetic spread history simulation
 - 9 unit tests covering spread computation, path finding, simulation
+
