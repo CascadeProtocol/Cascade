@@ -101,3 +101,4 @@ export class PriceMonitor {
     return Array.from(this.snapshots.values());
   }
 }
+
