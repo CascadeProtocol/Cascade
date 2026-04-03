@@ -23,3 +23,4 @@ export function computeSpread(pair: string, prices: VenuePrice[]): SpreadSnapsho
 export function isStale(snapshot: SpreadSnapshot, maxAgeMs = 10000): boolean {
   return Date.now() - snapshot.capturedAt > maxAgeMs;
 }
+
