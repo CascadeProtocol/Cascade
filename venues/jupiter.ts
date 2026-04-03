@@ -38,3 +38,4 @@ export class JupiterVenue extends BaseVenue {
     }
   }
 }
+
