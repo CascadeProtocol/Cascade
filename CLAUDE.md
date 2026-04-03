@@ -46,3 +46,4 @@ docs/
 - Agent always calls `simulate_path` before `arb_decision`
 - Never use `console.log` — use `createLogger(ns)` from `lib/logger.ts`
 
+
