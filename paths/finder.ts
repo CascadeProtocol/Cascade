@@ -51,3 +51,4 @@ export function findPaths(snapshots: SpreadSnapshot[]): ArbPath[] {
   // Sort by net profit descending
   return paths.sort((a, b) => b.estimatedNetProfitUsd - a.estimatedNetProfitUsd);
 }
+
