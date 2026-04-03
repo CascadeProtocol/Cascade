@@ -5,3 +5,4 @@ export abstract class BaseVenue {
   abstract getPrice(pair: TokenPair): Promise<VenuePrice>;
   abstract isHealthy(): Promise<boolean>;
 }
+
