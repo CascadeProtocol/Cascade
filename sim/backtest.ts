@@ -82,3 +82,4 @@ async function runBacktest(pair: string, days = 7) {
 
 await runBacktest("SOL/USDC", 7);
 await runBacktest("BONK/USDC", 7);
+
