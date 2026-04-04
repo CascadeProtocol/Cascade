@@ -87,6 +87,55 @@ Create `venues/your-venue.ts` extending `BaseVenue`, implement `getPrice()` and 
 
 ---
 
+## Technical Spec
+
+### Price Impact Model — Constant Product AMM
+
+Cascade uses a Constant Product approximation for price impact estimation on Raydium v3 and Orca Whirlpool:
+
+```
+impactFactor = 1 − tradeSize / (reserveDepth + tradeSize)
+adjustedProfit = grossProfit × impactFactor
+```
+
+Reserve depth is approximated conservatively at 20× the trade size (if the actual pool depth is unknown from the quote). This over-estimates impact, which is the correct bias — it's better to skip a profitable trade than to take a losing one.
+
+**Meteora DLMM note:** DLMM bins have discrete price steps. Real impact is stepwise, not smooth. The CP model still applies as a conservative lower bound — actual impact is typically lower if the trade stays within a single bin.
+
+### Stale Quote Filter
+
+Arb windows on Solana close in 3–15 seconds. Cascade rejects paths where the spread snapshot is older than `MAX_QUOTE_AGE_SECONDS` (default 8s) before making a Claude agent call. This avoids spending ~800ms on an agent evaluation for a spread that almost certainly no longer exists.
+
+Data age is also passed to the agent prompt as `Quote freshness: fresh | stale` — the agent factors this into its confidence score.
+
+### Wash-Quote Heuristic
+
+A spread where exactly one venue diverges > 0.3% from the median of the rest is flagged as a potential bad quote before reaching the agent:
+
+```
+sorted prices: [1.2340, 1.2342, 1.2343, 1.2387] ← Raydium only outlier
+→ isPotentialWashQuote = true → agent scrutinizes before EXECUTE
+```
+
+This catches a large class of stale Jupiter aggregator quotes and venue API glitches before they reach the decision layer.
+
+### Gas Cost Model
+
+Solana transaction cost is approximated at:
+```
+baseFee = 5000 lamports (~$0.0007 at $140/SOL)
+priorityFee = 100_000 lamports typical (~$0.014)
+total ≈ $0.015 per tx
+```
+
+A 2-leg arb (buy + sell) costs ~$0.03 in gas. This is already included in `estimatedGasCostUsd` before the agent sees the path. The `MIN_NET_PROFIT_USD` threshold (default $5) provides 166× gas coverage.
+
+### Why No Flash Loans
+
+Solana does not support EVM-style atomic flash loans in a single transaction. Cross-program invocations (CPIs) can compose, but there's no native "borrow-swap-repay-or-revert" primitive. Cascade executes legs sequentially with `MAX_POSITION_USD` as the capital ceiling.
+
+---
+
 ## Stack
 
 - **Runtime**: Bun 1.2
