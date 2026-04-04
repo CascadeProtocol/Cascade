@@ -76,6 +76,13 @@ export class PriceMonitor {
       return null;
     }
 
+    // Log any venues that failed — persistent failures indicate API key issues
+    // or rate limiting that should be investigated before missing real opportunities
+    const failed = results.filter((r) => r.status === "rejected");
+    if (failed.length > 0) {
+      log.debug("Venue fetch failures", { symbol, failed: failed.length, total: results.length });
+    }
+
     const snapshot = computeSpread(pair.symbol, prices);
     this.snapshots.set(symbol, snapshot);
     return snapshot;
