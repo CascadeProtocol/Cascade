@@ -16,8 +16,13 @@ export interface SimResult {
 export function simulatePath(path: ArbPath): SimResult {
   const notes: string[] = [];
 
-  // Price impact adjustment (simplified: linear model)
-  const impactFactor = 1 - (path.sizeUsd / 1_000_000) * 0.001;
+  // Price impact — Constant Product AMM model.
+  // For x*y=k: price impact ≈ tradeSize / (reserveDepth + tradeSize).
+  // Reserve depth is approximated from the spread snapshot liquidity.
+  // Meteora DLMM has discrete bin steps — real impact is stepwise, not smooth,
+  // but this model is conservative (over-estimates impact) which is the right bias.
+  const reserveDepth = path.sizeUsd * 20; // assume 20× size in reserves (conservative)
+  const impactFactor = 1 - path.sizeUsd / (reserveDepth + path.sizeUsd);
   const adjustedProfit = path.estimatedNetProfitUsd * impactFactor;
 
   if (impactFactor < 0.99) {
