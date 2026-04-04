@@ -5,7 +5,10 @@ import { randomUUID } from "crypto";
 
 const log = createLogger("PathFinder");
 
-const GAS_COST_USD = 0.05; // ~0.0003 SOL per tx, two txs per arb
+// Gas cost model: base fee ~5000 lamports + priority fee ~100_000 lamports per tx.
+// A 2-leg arb (buy + sell) = 2 txs ≈ 210_000 lamports ≈ $0.03 at $140/SOL.
+// Using $0.05 as a conservative estimate with buffer for priority fee spikes.
+const GAS_COST_USD = 0.05;
 
 export function findPaths(snapshots: SpreadSnapshot[]): ArbPath[] {
   const paths: ArbPath[] = [];
