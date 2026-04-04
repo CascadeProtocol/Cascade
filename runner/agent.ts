@@ -57,6 +57,16 @@ export class ArbAgent {
   }
 
   async evaluate(path: ArbPath, context: SpreadSnapshot): Promise<AgentDecision | null> {
+    // Reject stale quotes before burning an agent call. Arb windows on Solana
+    // typically close in 3–15 seconds — quotes older than MAX_QUOTE_AGE_SECONDS
+    // are almost certainly already gone. The agent call is ~800ms; not worth it.
+    const quoteAgeMs = Date.now() - context.capturedAt;
+    const maxAgeMs = (config.MAX_QUOTE_AGE_SECONDS ?? 8) * 1000;
+    if (quoteAgeMs > maxAgeMs) {
+      log.debug("Skipping stale quote", { pairId: path.id, ageMs: quoteAgeMs });
+      return null;
+    }
+
     this.pathIndex.set(path.id, path);
 
     const prompt = `Evaluate this arbitrage opportunity:
@@ -73,7 +83,8 @@ Position size: $${path.sizeUsd}
 Context:
 - ${context.prices.length} venues reporting prices
 - Prices range from $${Math.min(...context.prices.map((p) => p.price)).toFixed(6)} to $${Math.max(...context.prices.map((p) => p.price)).toFixed(6)}
-- Data age: ${((Date.now() - context.capturedAt) / 1000).toFixed(1)}s`;
+- Data age: ${((Date.now() - context.capturedAt) / 1000).toFixed(1)}s
+- Quote freshness: ${Date.now() - context.capturedAt < 5000 ? "fresh" : "stale — spread may have closed"}`;
 
     const messages: Anthropic.MessageParam[] = [
       { role: "user", content: prompt },
