@@ -123,7 +123,9 @@ Context:
               pathId: inp.path_id,
               confidence: inp.confidence,
               reasoning: inp.reasoning,
-              adjustedSizeUsd: inp.adjusted_size_usd,
+              ...(inp.adjusted_size_usd !== undefined
+                ? { adjustedSizeUsd: inp.adjusted_size_usd }
+                : {}),
             };
             break agentLoop;
           }

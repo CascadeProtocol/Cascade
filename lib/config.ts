@@ -25,7 +25,6 @@ const ConfigSchema = z.object({
   CLAUDE_MODEL: z.string().default("claude-sonnet-4-5-20251001"),
   CONFIDENCE_THRESHOLD: z.coerce.number().min(0).max(1).default(0.70),
   MAX_QUOTE_AGE_SECONDS: z.coerce.number().min(1).default(8),
-  MAX_PRICE_IMPACT_PCT: z.coerce.number().min(0).default(0.5),
 });
 
 export type Config = z.infer<typeof ConfigSchema>;
