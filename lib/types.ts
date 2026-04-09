@@ -39,6 +39,9 @@ export interface SpreadSnapshot {
   bestAsk: VenuePrice;    // highest sell price
   spreadPct: number;
   capturedAt: number;
+  oldestSourceTimestamp: number;
+  sourceMaxAgeMs: number;
+  isPotentialWashQuote: boolean;
 }
 
 // ─── Arbitrage paths ──────────────────────────────────────────────────────────
@@ -56,6 +59,8 @@ export interface ArbPath {
   estimatedGasCostUsd: number;
   estimatedNetProfitUsd: number;
   slippageBps: number;
+  buyLiquidityUsd: number;
+  sellLiquidityUsd: number;
   viable: boolean;
   viabilityReason: string;
 }
@@ -70,6 +75,8 @@ export interface AgentDecision {
   confidence: number;
   reasoning: string;
   adjustedSizeUsd?: number;
+  projectedProfitUsd?: number;
+  simulated: boolean;
 }
 
 // ─── Execution result ─────────────────────────────────────────────────────────

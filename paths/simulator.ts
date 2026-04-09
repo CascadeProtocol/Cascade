@@ -5,6 +5,7 @@ export interface SimResult {
   pathId: string;
   projectedProfitUsd: number;
   priceImpactAdjusted: boolean;
+  adjustedSizeUsd: number;
   recommendation: "EXECUTE" | "SKIP";
   notes: string[];
 }
@@ -15,22 +16,23 @@ export interface SimResult {
  */
 export function simulatePath(path: ArbPath): SimResult {
   const notes: string[] = [];
+  const depthCapUsd = Math.min(path.buyLiquidityUsd, path.sellLiquidityUsd);
+  const adjustedSizeUsd = Math.min(path.sizeUsd, Math.max(depthCapUsd / 3, 0));
+  const sizeScale = path.sizeUsd > 0 ? adjustedSizeUsd / path.sizeUsd : 0;
 
-  // Price impact — Constant Product AMM model.
-  // For x*y=k: price impact ≈ tradeSize / (reserveDepth + tradeSize).
-  // Reserve depth is approximated from the spread snapshot liquidity.
-  // Meteora DLMM has discrete bin steps — real impact is stepwise, not smooth,
-  // but this model is conservative (over-estimates impact) which is the right bias.
-  const reserveDepth = path.sizeUsd * 20; // assume 20× size in reserves (conservative)
-  const impactFactor = 1 - path.sizeUsd / (reserveDepth + path.sizeUsd);
-  const adjustedProfit = path.estimatedNetProfitUsd * impactFactor;
+  const reserveDepth = Math.max(depthCapUsd, adjustedSizeUsd);
+  const impactPct = adjustedSizeUsd > 0
+    ? Math.min(adjustedSizeUsd / (reserveDepth + adjustedSizeUsd), config.MAX_PRICE_IMPACT_PCT / 100)
+    : 1;
+  const impactFactor = 1 - impactPct;
+  const adjustedProfit = path.estimatedNetProfitUsd * sizeScale * impactFactor;
 
   if (impactFactor < 0.99) {
     notes.push(`Price impact reduces profit by ${((1 - impactFactor) * 100).toFixed(2)}%`);
   }
 
   // Slippage reserve
-  const slippageCost = (path.slippageBps / 10000) * path.sizeUsd;
+  const slippageCost = (path.slippageBps / 10000) * adjustedSizeUsd;
   const finalProfit = adjustedProfit - slippageCost;
 
   if (slippageCost > 0.5) {
@@ -38,10 +40,9 @@ export function simulatePath(path: ArbPath): SimResult {
   }
 
   // Check liquidity
-  const minLiquidity = path.sizeUsd * 3; // need 3x size in pool
-  const buyLiquidity = 0; // would be filled from venue quote
-  if (buyLiquidity > 0 && buyLiquidity < minLiquidity) {
-    notes.push(`Low liquidity on ${path.buyVenue}: $${buyLiquidity.toFixed(0)}`);
+  const minLiquidity = adjustedSizeUsd * 3;
+  if (depthCapUsd < minLiquidity) {
+    notes.push(`Liquidity capped size to $${adjustedSizeUsd.toFixed(0)} across ${path.buyVenue}/${path.sellVenue}`);
   }
 
   const recommendation =
@@ -55,6 +56,7 @@ export function simulatePath(path: ArbPath): SimResult {
     pathId: path.id,
     projectedProfitUsd: finalProfit,
     priceImpactAdjusted: impactFactor < 1,
+    adjustedSizeUsd,
     recommendation,
     notes,
   };

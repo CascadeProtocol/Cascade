@@ -4,6 +4,7 @@ export function computeSpread(pair: string, prices: VenuePrice[]): SpreadSnapsho
   const sorted = [...prices].sort((a, b) => a.price - b.price);
   const bestBid = sorted[0]!;   // lowest = best to buy from
   const bestAsk = sorted[sorted.length - 1]!; // highest = best to sell to
+  const oldestSourceTimestamp = Math.min(...prices.map((price) => price.timestamp));
 
   const spreadPct =
     bestBid.price > 0
@@ -17,6 +18,9 @@ export function computeSpread(pair: string, prices: VenuePrice[]): SpreadSnapsho
     bestAsk,
     spreadPct,
     capturedAt: Date.now(),
+    oldestSourceTimestamp,
+    sourceMaxAgeMs: Date.now() - oldestSourceTimestamp,
+    isPotentialWashQuote: false,
   };
 }
 

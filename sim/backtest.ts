@@ -32,7 +32,17 @@ function generateHistory(pair: string, days: number): SpreadSnapshot[] {
     const bestAsk = sorted[sorted.length - 1]!;
     const spreadPct = ((bestAsk.price - bestBid.price) / bestBid.price) * 100;
 
-    snapshots.push({ pair, prices, bestBid, bestAsk, spreadPct, capturedAt: ts });
+    snapshots.push({
+      pair,
+      prices,
+      bestBid,
+      bestAsk,
+      spreadPct,
+      capturedAt: ts,
+      oldestSourceTimestamp: ts,
+      sourceMaxAgeMs: 0,
+      isPotentialWashQuote: false,
+    });
   }
   return snapshots;
 }

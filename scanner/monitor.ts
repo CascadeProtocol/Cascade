@@ -6,7 +6,7 @@ import { RaydiumVenue } from "../venues/raydium.js";
 import { OrcaVenue } from "../venues/orca.js";
 import { MeteoraVenue } from "../venues/meteora.js";
 import type { BaseVenue } from "../venues/base.js";
-import { computeSpread } from "./spreads.js";
+import { computeSpread, isPotentialWashQuote } from "./spreads.js";
 
 const log = createLogger("Monitor");
 
@@ -84,6 +84,7 @@ export class PriceMonitor {
     }
 
     const snapshot = computeSpread(pair.symbol, prices);
+    snapshot.isPotentialWashQuote = isPotentialWashQuote(snapshot);
     this.snapshots.set(symbol, snapshot);
     return snapshot;
   }

@@ -2,7 +2,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { config } from "../lib/config.js";
 import { createLogger } from "../lib/logger.js";
 import type { ArbPath, AgentDecision, SpreadSnapshot } from "../lib/types.js";
-import { simulatePath } from "../paths/simulator.js";
+import { simulatePath, type SimResult } from "../paths/simulator.js";
 
 const log = createLogger("ArbAgent");
 
@@ -43,7 +43,7 @@ Decision rules:
 - Always call simulate_path first to get price-impact-adjusted profit
 - EXECUTE only if: adjusted net profit > $${config.MIN_NET_PROFIT_USD}, spread > ${config.MIN_SPREAD_PCT}%, and you have high confidence (> ${config.CONFIDENCE_THRESHOLD})
 - SKIP if simulation reduces profit below threshold, or if the spread looks like a data artifact
-- MONITOR if the opportunity is marginal but could improve (spread between 0.15–${config.MIN_SPREAD_PCT}%)
+- MONITOR if the opportunity is marginal but could improve (spread between 0.15-${config.MIN_SPREAD_PCT}%)
 
 Be conservative. A missed opportunity is better than a loss from bad data.
 Set confidence as a genuine probability, never 1.0.`;
@@ -51,16 +51,14 @@ Set confidence as a genuine probability, never 1.0.`;
 export class ArbAgent {
   private client: Anthropic;
   private pathIndex = new Map<string, ArbPath>();
+  private simulations = new Map<string, SimResult>();
 
   constructor() {
     this.client = new Anthropic({ apiKey: config.ANTHROPIC_API_KEY });
   }
 
   async evaluate(path: ArbPath, context: SpreadSnapshot): Promise<AgentDecision | null> {
-    // Reject stale quotes before burning an agent call. Arb windows on Solana
-    // typically close in 3–15 seconds — quotes older than MAX_QUOTE_AGE_SECONDS
-    // are almost certainly already gone. The agent call is ~800ms; not worth it.
-    const quoteAgeMs = Date.now() - context.capturedAt;
+    const quoteAgeMs = Math.max(Date.now() - context.capturedAt, context.sourceMaxAgeMs);
     const maxAgeMs = (config.MAX_QUOTE_AGE_SECONDS ?? 8) * 1000;
     if (quoteAgeMs > maxAgeMs) {
       log.debug("Skipping stale quote", { pairId: path.id, ageMs: quoteAgeMs });
@@ -68,6 +66,7 @@ export class ArbAgent {
     }
 
     this.pathIndex.set(path.id, path);
+    this.simulations.delete(path.id);
 
     const prompt = `Evaluate this arbitrage opportunity:
 
@@ -78,13 +77,16 @@ Spread: ${path.spreadPct.toFixed(3)}%
 Estimated gross profit: $${path.estimatedGrossProfitUsd.toFixed(2)}
 Gas cost: $${path.estimatedGasCostUsd.toFixed(2)}
 Estimated net profit: $${path.estimatedNetProfitUsd.toFixed(2)}
-Position size: $${path.sizeUsd}
+Position size: $${path.sizeUsd.toFixed(2)}
+Buy liquidity: $${path.buyLiquidityUsd.toFixed(0)}
+Sell liquidity: $${path.sellLiquidityUsd.toFixed(0)}
 
 Context:
 - ${context.prices.length} venues reporting prices
 - Prices range from $${Math.min(...context.prices.map((p) => p.price)).toFixed(6)} to $${Math.max(...context.prices.map((p) => p.price)).toFixed(6)}
-- Data age: ${((Date.now() - context.capturedAt) / 1000).toFixed(1)}s
-- Quote freshness: ${Date.now() - context.capturedAt < 5000 ? "fresh" : "stale — spread may have closed"}`;
+- Quote age: ${(context.sourceMaxAgeMs / 1000).toFixed(1)}s
+- Quote freshness: ${context.sourceMaxAgeMs < 5000 ? "fresh" : "stale - spread may have closed"}
+- Wash quote flag: ${context.isPotentialWashQuote ? "true - require extra skepticism" : "false"}`;
 
     const messages: Anthropic.MessageParam[] = [
       { role: "user", content: prompt },
@@ -118,14 +120,25 @@ Context:
               reasoning: string;
               adjusted_size_usd?: number;
             };
+            const sim = this.simulations.get(inp.path_id);
+            if (!sim) {
+              results.push({
+                type: "tool_result",
+                tool_use_id: tb.id,
+                content: "simulate_path must be called successfully before arb_decision",
+                is_error: true,
+              });
+              continue;
+            }
+
             decision = {
               action: inp.action,
               pathId: inp.path_id,
               confidence: inp.confidence,
               reasoning: inp.reasoning,
-              ...(inp.adjusted_size_usd !== undefined
-                ? { adjustedSizeUsd: inp.adjusted_size_usd }
-                : {}),
+              adjustedSizeUsd: inp.adjusted_size_usd ?? sim.adjustedSizeUsd,
+              projectedProfitUsd: sim.projectedProfitUsd,
+              simulated: true,
             };
             break agentLoop;
           }
@@ -133,10 +146,11 @@ Context:
           if (tb.name === "simulate_path") {
             const p = this.pathIndex.get((tb.input as { path_id: string }).path_id);
             if (!p) {
-              results.push({ type: "tool_result", tool_use_id: tb.id, content: "Path not found" });
+              results.push({ type: "tool_result", tool_use_id: tb.id, content: "Path not found", is_error: true });
               continue;
             }
             const sim = simulatePath(p);
+            this.simulations.set(p.id, sim);
             results.push({
               type: "tool_result",
               tool_use_id: tb.id,
@@ -158,4 +172,3 @@ Context:
     return decision;
   }
 }
-

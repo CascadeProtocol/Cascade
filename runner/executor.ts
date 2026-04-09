@@ -33,15 +33,13 @@ export class TradeExecutor {
     }
 
     const sizeUsd = decision.adjustedSizeUsd ?? path.sizeUsd;
+    const sizeScale = path.sizeUsd > 0 ? sizeUsd / path.sizeUsd : 0;
 
     if (config.PAPER_TRADING) {
-      // Simulate slippage: each leg loses up to SLIPPAGE_BPS / 2 of the gross profit.
-      // Two legs = full slippage tolerance applied once (buy slips up, sell slips down).
-      const slippageFactor = 1 - (path.slippageBps / 10_000);
-      const simulated = path.estimatedGrossProfitUsd * slippageFactor - path.estimatedGasCostUsd;
-      // Add ±15% noise to approximate real fill variance
-      const noise = 0.85 + Math.random() * 0.30;
-      const profit = simulated * noise;
+      const projectedProfitUsd =
+        decision.projectedProfitUsd ??
+        (path.estimatedNetProfitUsd * sizeScale - (path.slippageBps / 10_000) * sizeUsd);
+      const profit = Number(projectedProfitUsd.toFixed(2));
       this.totalProfitUsd += profit;
       this.totalTrades++;
       if (profit > 0) this.wins++;

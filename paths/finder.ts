@@ -16,7 +16,11 @@ export function findPaths(snapshots: SpreadSnapshot[]): ArbPath[] {
   for (const snap of snapshots) {
     if (snap.spreadPct < config.MIN_SPREAD_PCT) continue;
 
-    const grossProfit = (snap.spreadPct / 100) * config.MAX_POSITION_USD;
+    const liquidityCap = Math.min(snap.bestBid.liquidityUsd, snap.bestAsk.liquidityUsd);
+    const executableSizeUsd = Math.min(config.MAX_POSITION_USD, Math.max(liquidityCap / 3, 0));
+    if (executableSizeUsd <= 0) continue;
+
+    const grossProfit = (snap.spreadPct / 100) * executableSizeUsd;
     const netProfit = grossProfit - GAS_COST_USD;
 
     const viable = netProfit >= config.MIN_NET_PROFIT_USD;
@@ -29,11 +33,13 @@ export function findPaths(snapshots: SpreadSnapshot[]): ArbPath[] {
       buyPrice: snap.bestBid.price,
       sellPrice: snap.bestAsk.price,
       spreadPct: snap.spreadPct,
-      sizeUsd: config.MAX_POSITION_USD,
+      sizeUsd: executableSizeUsd,
       estimatedGrossProfitUsd: grossProfit,
       estimatedGasCostUsd: GAS_COST_USD,
       estimatedNetProfitUsd: netProfit,
       slippageBps: config.SLIPPAGE_BPS,
+      buyLiquidityUsd: snap.bestBid.liquidityUsd,
+      sellLiquidityUsd: snap.bestAsk.liquidityUsd,
       viable,
       viabilityReason: viable
         ? `Net profit $${netProfit.toFixed(2)} exceeds minimum $${config.MIN_NET_PROFIT_USD}`
