@@ -13,7 +13,7 @@
     "lint": "tsc --noEmit"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.54.0",
+    "@anthropic-ai/sdk": "^0.90.0",
     "@solana/web3.js": "^1.98.0",
     "zod": "^3.23.0",
     "dotenv": "^16.4.5"
