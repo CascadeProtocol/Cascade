@@ -1,6 +1,8 @@
 import { z } from "zod";
 import "dotenv/config";
 
+const TEST_ENV = process.env.NODE_ENV === "test" || process.env.VITEST === "true";
+
 const ConfigSchema = z.object({
   ANTHROPIC_API_KEY: z.string().min(1),
   HELIUS_API_KEY: z.string().min(1),
@@ -30,7 +32,16 @@ const ConfigSchema = z.object({
 export type Config = z.infer<typeof ConfigSchema>;
 
 function loadConfig(): Config {
-  const result = ConfigSchema.safeParse(process.env);
+  const env = TEST_ENV
+    ? {
+        ANTHROPIC_API_KEY: "test-anthropic-key",
+        HELIUS_API_KEY: "test-helius-key",
+        SOLANA_RPC_URL: "https://example.com",
+        MIN_NET_PROFIT_USD: "1",
+        ...process.env,
+      }
+    : process.env;
+  const result = ConfigSchema.safeParse(env);
   if (!result.success) {
     console.error("❌ Configuration error:");
     for (const issue of result.error.issues) {
