@@ -7,17 +7,17 @@
 
 Autonomous cross-venue arbitrage scanner for Solana. Monitors price spreads across four DEXes every 3 seconds and uses a Claude agent to evaluate, simulate, and execute opportunities before they close.
 
-## Agent Decision Loop
+## Live Arbitrage Scanner
 
-<img src="assets/preview-loop.png" alt="Cascade agent decision loop" width="100%" />
+<img src="assets/preview-scanner.png" alt="Cascade live arbitrage scanner" width="100%" />
 
-Cascade's live decision loop: raw spread capture, simulation path, price-impact checks, net-profit math, and Claude's final `EXECUTE`, `MONITOR`, or `SKIP` decision before the window closes.
+Real-time scanner view for Cascade: live venue quotes from Jupiter, Raydium, Orca, and Meteora, selected opportunity, route quality checks, decision queue, recent opportunity log, and guardrails that keep stale or low-quality spreads out of execution.
 
-## Cross-Venue Scanner
+## How Cascade Decides
 
-<img src="assets/preview-scanner.png" alt="Cascade cross-venue scanner" width="100%" />
+<img src="assets/preview-loop.png" alt="Cascade decision workflow" width="100%" />
 
-Real-time scanner view for Jupiter, Raydium, Orca, and Meteora showing the detected price gap, route health, gas-adjusted profit, confidence, and execution route for each opportunity.
+Cascade checks whether the price gap is real before risking capital: raw spread detection, quote freshness, slippage, price impact, gas, wash-quote checks, and the final `EXECUTE`, `MONITOR`, or `SKIP` decision.
 
 ---
 
