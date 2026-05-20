@@ -8,3 +8,5 @@ logs/
 Thumbs.db
 coverage/
 site/
+# Local env overrides
+.env.*.local
